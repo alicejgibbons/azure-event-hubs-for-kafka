@@ -18,6 +18,12 @@ local.properties
 # Locally stored "Eclipse launch configurations"
 *.launch
 
+# Eclipse Core      
+.project
+
+# JDT-specific (Eclipse Java Development Tools)     
+.classpath
+
 # PyDev specific (Python IDE for Eclipse)
 *.pydevproject
 
@@ -384,3 +390,10 @@ buildNumber.properties
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json

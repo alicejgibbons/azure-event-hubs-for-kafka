@@ -4,11 +4,13 @@ import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import java.sql.Timestamp;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.IOException;
 
 public class TestDataReporter implements Runnable {
 
-    private static final int NUM_MESSAGES = 100;
+    private static final int NUM_MESSAGES = 10000;
     private final String TOPIC;
 
     private Producer<Long, String> producer;
@@ -23,8 +25,17 @@ public class TestDataReporter implements Runnable {
         for(int i = 0; i < NUM_MESSAGES; i++) {                
             long time = System.currentTimeMillis();
             System.out.println("Test Data #" + i + " from thread #" + Thread.currentThread().getId());
+
+            // Read in SampleData.json file
+           String sampleData = "SAMPLE DATA";
+
+           try {
+               sampleData = new String(Files.readAllBytes(Paths.get("./SampleData.json")));
+           } catch(IOException ex) {
+               System.out.println("Invalid JSON File");
+           }
             
-            final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(TOPIC, time, "Test Data #" + i);
+            final ProducerRecord<Long, String> record = new ProducerRecord<Long, String>(TOPIC, time, sampleData);
             producer.send(record, new Callback() {
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
                     if (exception != null) {
@@ -33,6 +44,13 @@ public class TestDataReporter implements Runnable {
                     }
                 }
             });
+
+            // Pause for 10 seconds after sending data
+            try {
+                Thread.sleep(10000); 
+            } catch(InterruptedException ex){
+                Thread.currentThread().interrupt(); 
+            }
         }
         System.out.println("Finished sending " + NUM_MESSAGES + " messages from thread #" + Thread.currentThread().getId() + "!");
     }
